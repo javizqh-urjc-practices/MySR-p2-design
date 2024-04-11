@@ -155,7 +155,7 @@ try:
             distance = p.getBasePositionAndOrientation(robotId)[0][1]
             if distance >= MOVE_TARGET - 0.05 and distance <= MOVE_TARGET + 0.05:
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
                 p.setJointMotorControlArray(
                     robotId,
                     wheels,
