@@ -76,7 +76,7 @@ def calculate_waste(rob_id, n_joints):
     waste = 0
 
     for joint_index in range(n_joints):
-        waste += abs(p.getJointState(rob_id, joint_index)[3])
+        waste += sum(abs(ele) for ele in p.getJointState(rob_id, joint_index)[2][0:3])
 
     return waste
 
@@ -131,8 +131,12 @@ p.resetDebugVisualizerCamera(
 )
 state = 0
 iterations = 0
-total_waste = 0
 csv_values = []
+start_time = time.time()
+
+for index in range(8):
+    print(index)
+    p.enableJointForceTorqueSensor(robotId, index, 1)
 
 try:
     while state < 9:
@@ -166,13 +170,13 @@ try:
             i += 1
             if i > 50:
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
                 i = 0
 
         elif state == 2:
             if move_to(robotId, EOF_INDEX, checkpoints["cube"], 100, 0.03):
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
 
             # Open the lid
             p.setJointMotorControl2(
@@ -184,19 +188,19 @@ try:
             i += 1
             if i > 50:
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
                 i = 0
 
         elif state == 4:
             if move_to(robotId, EOF_INDEX, checkpoints["lat_move"], 200, 0.03):
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
             close_gripper(robotId, gripper)
 
         elif state == 5:
             if move_to(robotId, EOF_INDEX, checkpoints["deposit"], 200, 0.01):
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
             close_gripper(robotId, gripper)
 
         elif state == 6:
@@ -206,30 +210,27 @@ try:
             i += 1
             if i > 50:
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
                 i = 0
 
         elif state == 7:
             if move_to(robotId, EOF_INDEX, checkpoints["lat_move"], 100, 0.01):
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
 
         elif state == 8:
             if move_to(robotId, EOF_INDEX, checkpoints["start"], 100, 0.006):
                 state += 1
-                print(iterations*0.005)
+                print(time.time() - start_time)
             store_gripper(robotId, gripper)
 
-        if state > 0:
-            total_waste += calculate_waste(robotId, 7)
-            if iterations % 2 == 1:
-                csv_values.append([iterations * 0.005, 7, calculate_waste(robotId, 7)])
+        if state > 0 and iterations % 2 == 1:
+            csv_values.append([time.time() - start_time, 7, calculate_waste(robotId, 7)])
 
 except KeyboardInterrupt:
     pass
 
-print(total_waste)
-print(iterations * 0.005)
+print(time.time() - start_time)
 
 p.disconnect()
 
