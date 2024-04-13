@@ -127,7 +127,7 @@ checkpoints = {
 }
 
 p.resetDebugVisualizerCamera(
-    cameraDistance=5, cameraYaw=130, cameraPitch=-40, cameraTargetPosition=[0, 4, 1]
+    cameraDistance=5, cameraYaw=130, cameraPitch=-40, cameraTargetPosition=[0, 3, 1]
 )
 state = 0
 iterations = 0
